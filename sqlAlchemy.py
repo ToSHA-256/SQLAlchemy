@@ -2,6 +2,7 @@ import psycopg2
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
+from sqlalchemy import func
 
 DATABASE_URL = 'postgresql://sql_user:sql_password@localhost:5432/dbstudents'
 
@@ -57,4 +58,10 @@ for product in products:
 who_can_by = session.query(Customer.name, Product.name).join(Customer, Customer.possession > Product.price)
 print("\nКто какой продукт сможет купить: ")
 for row in who_can_by.all():
+    print(row)
+max_price=session.query(func.max(Product.price)).scalar()
+print(max_price)
+who_can_by_any = session.query(Customer.name).where(Customer.possession>max_price)
+print("\nКто сможет купить любой продукт: ")
+for row in who_can_by_any.all():
     print(row)
